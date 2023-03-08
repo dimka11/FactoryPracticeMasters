@@ -1,0 +1,13 @@
+.output-image {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.drop-area {
+    min-height: 60px;
+    margin-bottom: 10px;
+}
