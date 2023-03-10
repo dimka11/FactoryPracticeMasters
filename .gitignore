@@ -1,4 +1,6 @@
 __pycache__
+.pytest_cache
+tests/.pytest_cache
 Examples
 runs
 uploaded_files
