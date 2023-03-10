@@ -3,7 +3,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
     setUI("waiting-results", "none")
 });
 
-FilesDragDrop = []
+var FilesDragDrop = []
+var uid_global = ""
+var refreshIntervalId
+var uploadedFileNames
 
 function allowDrop(event) {
     event.preventDefault();
@@ -98,27 +101,121 @@ function checkFilesCount() {
 }
 
 function get_predict_status(uid) {
+    const formData = new FormData();
+    formData.append("uid", uid_global);
 
+    fetch("../uid_status", {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(json => {
+            if (json['status'] == 'Done') {
+                clearInterval(refreshIntervalId);
+                download_predict_text(uid)
+                download_predict_crops_names(uid)
+            }
+        })
+        .catch((err) => ("Error occurred", err));
 }
-
 
 function download_predict_text(uid) {
+    const formData = new FormData();
+    formData.append("uid", uid_global);
 
+    fetch("./get_detection_results_text", {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(json => {
+            render_predict_text(json)
+        })
+        .catch((err) => ("Error occurred", err));
 }
 
+function render_predict_text(json) {
+    container = document.getElementById("predicted-text")
+    setUI("waiting-results", "none")
 
-function download_predict_crops(uid) {
+    for (const [idx, item] of json['results'].entries()) {
+        var content = document.createTextNode(uploadedFileNames[idx] + " : 'xmin', 'ymin', 'xmax', 'ymax', 'confidence' \n");
+        var paragraph = document.createElement('p')
+        paragraph.appendChild(content)
+        container.appendChild(paragraph)
 
+        for (box of item) {
+            var content = document.createTextNode(`${box[0]} ${box[1]} ${box[2]} ${box[3]} ${Number(box[4]).toFixed(2)}`);
+            var paragraph = document.createElement('p')
+            paragraph.style.marginBottom = '0.1rem'
+            paragraph.appendChild(content)
+            container.appendChild(paragraph)
+        }
+    }
 }
 
+function hide_detection_results() {
+    el = document.getElementById('predicted-text')
+
+    el.style.display = el.style.display != "none" ? "none" : "block";
+}
+
+function download_predict_crops_names(uid) {
+    const formData = new FormData();
+    formData.append("uid", uid_global);
+
+    fetch("./get_detection_results_crops", {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(json => {
+            console.log(json)
+            download_crops_images(json, uid)
+        })
+        .catch((err) => ("Error occurred", err));
+}
+
+function download_crops_images(json, uid) {
+    images = []
+    for (item of json) {
+        link = `./predicted_crops/${uid}/crops/human/${item}`
+        fetch(link, {
+            method: 'GET'
+        }).then(response => response.blob())
+            .then(blob => {
+                console.log(blob);
+                render_predict_crops(blob)
+            });
+    }
+}
+
+function render_predict_crops(blob) {
+    var container = document.getElementById('predicted-crops')
+    var img_div = document.createElement('div')
+    img_div.classList.add('img-box')
+    var img = document.createElement("img");
+    img.classList.add('img-image')
+
+    img.src = URL.createObjectURL(blob);
+
+    img_div.appendChild(img)
+    container.appendChild(img_div)
+}
 
 var uploadImages = function () {
+
+    document.getElementById("predicted-text").innerHTML = "";
+    document.getElementById("predicted-crops").innerHTML = "";
 
     if (checkFilesCount()) {
         setUI("waiting-results", "block")
         FilesDragDrop = []
+        uploadedFileNames = null
 
         uid = uuidv4()
+        console.log(uid)
+        uid_global = uid
         const files = document.getElementById("formFileMultiple");
 
         const formData = new FormData();
@@ -135,8 +232,8 @@ var uploadImages = function () {
             .then(res => res.json())
             .then(json => {
                 console.log(json)
-                var refreshIntervalId = setInterval(get_status, 5000); // REPLACE
-                clearInterval(refreshIntervalId);
+                uploadedFileNames = json['Uploaded Filenames']
+                refreshIntervalId = setInterval(get_predict_status, 5000, uid);
             })
             .catch((err) => ("Error occurred", err));
     }

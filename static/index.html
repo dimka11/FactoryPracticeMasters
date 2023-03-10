@@ -10,6 +10,7 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="./main.css">
     <script type="text/javascript" src="./main.js"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 </head>
 
 <body>
@@ -33,14 +34,14 @@
                 <div class="lead">
                     <p id="waiting-results">Ожидание результата...</p>
                 </div>
-                <div class="lead">
+                <div class="lead" onclick="hide_detection_results()">
                     <p>Результаты детекции:</p>
                 </div>
-                <div class="predicted-text">
-                    <p>...</p>
+                <div class="predicted-text border border-primary" id="predicted-text">
+                    <p> </p>
                 </div>
-                <div class="crops">
-                    <p>...</p>
+                <div class="predicted-crops border border-primary" id="predicted-crops">
+                    <p> </p>
                 </div>
             </div>
             <div class="col-6">

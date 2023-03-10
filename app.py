@@ -9,7 +9,7 @@ from model import init_model, predict
 app = FastAPI(debug=True)
 
 
-class PredictionModelStore:
+class PredictionModelStore(object):
     model = None
 
 
@@ -63,9 +63,12 @@ async def get_status():
     return {"status": Status.system_status}
 
 
-@app.get("/uid_status")
+@app.post("/uid_status")
 async def get_uid_status(uid: str = Form(...)):
-    return {"status": Status.system_prediction_status.get(uid)}
+    status = Status.system_prediction_status.get(uid)
+    if status is None:
+        status = "no uid"
+    return {"status": status}
 
 
 @app.post("/upload_images")
@@ -85,11 +88,17 @@ async def get_detection_results_crops(uid: str = Form(...)):
 
 @app.post("/get_detection_results_text")
 async def predict_text(uid: str = Form(...)):
-    return results_store[uid]
+    r = results_store[uid]
+    r_list = []
+    for item in r:
+        item = item[['xmin', 'ymin', 'xmax', 'ymax', 'confidence']]
+        item.at[:, ['xmin', 'ymin', 'xmax', 'ymax']] = item[['xmin', 'ymin', 'xmax', 'ymax']].astype(int)
+        r_list.append(item.values.tolist())
+    return {"results": r_list}
 
 
+app.mount("/predicted_crops", StaticFiles(directory="predicted_crops"), name="images")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
-app.mount("/predicted_crops", StaticFiles(directory="predicted_crops"), name="static")
 
 
 if __name__ == "__main__":

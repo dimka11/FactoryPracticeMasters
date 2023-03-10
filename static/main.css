@@ -11,3 +11,29 @@
     min-height: 60px;
     margin-bottom: 10px;
 }
+
+.predicted-text {
+    margin-bottom: 10px;
+    padding: 5px;
+    overflow: auto;
+    min-height: 20px;
+    max-height: 200px;
+    font-size: 11pt;
+}
+
+.predicted-crops {
+    margin-bottom: 10px;
+    padding: 5px;
+    overflow: auto;
+    min-height: 20px;
+    max-height: 200px;
+}
+
+.img-box {
+    display: inline-block;
+}
+
+.img-image {
+    width: 180px;
+    height: 180px;
+}
