@@ -14,7 +14,8 @@ class Config:
 
 
 def init_model():
-    model = torch.hub.load(Config.model_name, Config.model_arch, path=Config.weights_path) # , device='gpu'
+    # run before: https://raw.githubusercontent.com/ultralytics/yolov5/master/requirements.txt
+    model = torch.hub.load(Config.model_name, Config.model_arch, path=Config.weights_path, trust_repo=True) # , device='gpu'
 
     model.conf = Config.conf
     model.iou = Config.iou

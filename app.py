@@ -24,7 +24,7 @@ results_crops_names = {}
 
 def save_file(uid, filename, data):
     if not os.path.isdir('uploaded_files'):
-        os.mkdir("uploads")
+        os.mkdir("uploaded_files")
     if not os.path.isdir(f'uploaded_files/{uid}'):
         os.mkdir(f'uploaded_files/{uid}')
 
@@ -102,4 +102,4 @@ app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=80, reload=True)
