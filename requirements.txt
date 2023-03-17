@@ -9,3 +9,4 @@ opencv-python==4.7.0.72
 psutil
 tqdm
 gitpython
+matplotlib
