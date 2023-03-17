@@ -21,6 +21,9 @@ class Status:
 results_store = {}
 results_crops_names = {}
 
+def make_predicted_crops_dir():
+    if not os.path.isdir('predicted_crops'):
+        os.mkdir("predicted_crops")
 
 def save_file(uid, filename, data):
     if not os.path.isdir('uploaded_files'):
@@ -102,4 +105,5 @@ app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
 if __name__ == "__main__":
+    make_predicted_crops_dir()
     uvicorn.run("app:app", host="0.0.0.0", port=80, reload=True)

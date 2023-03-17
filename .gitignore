@@ -4,4 +4,4 @@ tests/.pytest_cache
 Examples
 runs
 uploaded_files
-predicted_crops/*
+predicted_crops
